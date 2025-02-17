@@ -1,0 +1,28 @@
+name: Generate Dependency Graph
+
+on:
+  push:
+    branches:
+      - main  # adjust this if your default branch is different (e.g., master)
+  workflow_dispatch: # allows manual triggering
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      
+      - name: Generate Dependency Graph
+        uses: githubocto/repo-visualizer@main
+        with:
+          output_file: "docs/dependency-graph.svg"
+          excluded_paths: "venv,.git,__pycache__,*.pyc"
+          root_path: "."
+          should_push: true
