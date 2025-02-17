@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TEMPORA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+        /* Base styles */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        #app {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main container -->
+    <div id="app"></div>
+    
+    <!-- Polyfill for older browsers -->
+    <script>
+        if (!window.CustomEvent) {
+            window.CustomEvent = function(event, params) {
+                params = params || { bubbles: false, cancelable: false, detail: null };
+                var evt = document.createEvent('CustomEvent');
+                evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+                return evt;
+            }
+        }
+    </script>
+
+    <!-- Load dependencies in correct order -->
+    <script src="level_generator.js"></script>
+    <script src="chat_interface.js"></script>
+    <script src="puzzle_terminal.js"></script>
+    <script src="terminal.js"></script>
+    
+    <script>
+        // Initialize game after all scripts are loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof TerminalGame === 'function' && 
+                typeof ChatInterface === 'function' && 
+                typeof PuzzleTerminal === 'function' &&
+                typeof LevelGenerator === 'function') {
+                window.game = new TerminalGame();
+                console.log('Game initialized successfully');
+            } else {
+                console.error('Required classes not loaded');
+                const app = document.getElementById('app');
+                if (app) {
+                    app.innerHTML = `
+                        <div style="padding: 20px; color: #ff0000;">
+                            Error loading TEMPORA: Missing required components<br>
+                            Please check that all script files are present and refresh the page.
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
