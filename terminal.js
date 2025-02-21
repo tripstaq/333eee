@@ -237,26 +237,29 @@ class TerminalGame {
     }
 
     showSecurityTerminal() {
-        console.log('Showing security terminal...');
-        this.currentScreen = 'security';
+        const terminal = document.getElementById('terminal');
+        if (!terminal) return;
+
+        // Initialize puzzle with current level
+        const puzzleData = this.puzzleInterface.initializePuzzleTerminal(this.currentLevel);
         
-        // Hide other screens
-        document.querySelector('.main-menu').classList.add('hidden');
-        document.getElementById('chat-terminal').classList.add('hidden');
-        
-        // Show and initialize security terminal
-        const securityTerminal = document.getElementById('security-terminal');
-        if (!securityTerminal) {
-            console.error('Security terminal element not found');
-            return;
-        }
-        
-        securityTerminal.classList.remove('hidden');
-        if (this.puzzleInterface) {
-            this.puzzleInterface.initializePuzzleTerminal();
-        } else {
-            console.error('Puzzle interface not initialized');
-        }
+        terminal.innerHTML = `
+            <div class="security-terminal">
+                <div class="terminal-header">
+                    <div class="title">SECURITY TERMINAL - LEVEL ${this.currentLevel}</div>
+                    <div class="message">${puzzleData.message}</div>
+                </div>
+                <div class="number-grid">
+                    ${this.generateNumberGrid(puzzleData.gridSize)}
+                </div>
+                <div class="terminal-footer">
+                    <div class="attempts">Attempts remaining: ${puzzleData.maxAttempts}</div>
+                    <div class="hint">${puzzleData.hint}</div>
+                </div>
+            </div>
+        `;
+
+        this.addSecurityTerminalListeners();
     }
 
     getMainMenuStyles() {

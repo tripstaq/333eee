@@ -22,18 +22,49 @@ class ChatInterface {
             3: { fragments: 4, anomalies: 3, codes: 3 }
         };
 
-        // Initialize temporal codes
+        // Fixed temporal codes for each level
         this.temporalCodes = {
-            1: ['AA395B41620BC73E', 'FF872C90134AD45B'],
-            2: ['CC671D23458EF90A', 'BB234E78901CD56F'],
-            3: ['DD789A12345BC67E', 'EE123F45678AD90B']
+            1: {
+                sequence: ['AA395B41620BC73E'],
+                hints: [
+                    'First temporal signature detected...',
+                    'Pattern matches early timeline distortion',
+                    'Try DECRYPT AA395B41620BC73E'
+                ]
+            },
+            2: {
+                sequence: ['FF872C90134AD45B', 'CC671D23458EF90A'],
+                hints: [
+                    'Multiple temporal signatures detected...',
+                    'Quantum interference patterns increasing'
+                ]
+            },
+            3: {
+                sequence: ['DD789A12345BC67E', 'EE123F45678AD90B', 'BB234E78901CD56F'],
+                hints: [
+                    'Critical temporal anomalies detected...',
+                    'Timeline integrity compromised'
+                ]
+            }
         };
 
-        // Initialize anomalies
+        // Fixed anomaly sequence
         this.anomalies = {
-            1: ['paradox-alpha', 'timeline-breach'],
-            2: ['quantum-shift', 'causality-break'],
-            3: ['entropy-cascade', 'temporal-loop']
+            1: [{
+                id: 'paradox-alpha',
+                hint: 'Minor temporal paradox detected in sector 7',
+                solution: 'ANALYZE paradox-alpha'
+            }],
+            2: [{
+                id: 'quantum-shift',
+                hint: 'Quantum shift detected in temporal matrix',
+                solution: 'ANALYZE quantum-shift'
+            }],
+            3: [{
+                id: 'entropy-cascade',
+                hint: 'Critical entropy cascade forming',
+                solution: 'ANALYZE entropy-cascade'
+            }]
         };
 
         try {
@@ -127,54 +158,26 @@ ANOMALIES : ${this.gameState?.discoveredAnomalies?.size || 0}/${this.levelRequir
                         </div>
 
                         <div class="chat-container">
-                            <div class="terminal-window">
-                                <div class="terminal-header">
-                                    <span class="terminal-title">TEMPORAL AI v2.157.3</span>
-                                    <div class="terminal-controls">
-                                        <span class="control-dot"></span>
-                                        <span class="control-dot"></span>
-                                        <span class="control-dot"></span>
-                                    </div>
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="message system">
+                                    TEMPORAL AI INTERFACE INITIALIZED...
                                 </div>
-                                <div class="chat-messages" id="chat-messages">
-                                    <div class="message system">
-                                        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-                                        TEMPORAL AI INTERFACE INITIALIZED...
-                                        ESTABLISHING SECURE CONNECTION...
-                                        QUANTUM ENCRYPTION ACTIVE
-                                        NEURAL LINK ESTABLISHED
-                                        ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-                                    </div>
-                                    <div class="message ai">
-                                        <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
-                                        Greetings. I am the Temporal AI assigned to assist with data recovery 
-                                        and temporal anomaly analysis. How may I help you?
-                                    </div>
+                                <div class="message ai">
+                                    Greetings. I am the Temporal AI assigned to assist with data recovery and temporal anomaly analysis. How may I help you?
                                 </div>
-                                <div class="chat-input-container">
-                                    <span class="prompt">T.AI >></span>
-                                    <input type="text" id="message-input" class="chat-input" 
-                                           placeholder="Enter command..." autocomplete="off">
-                                </div>
+                            </div>
+                            <div class="chat-input-container">
+                                <span class="prompt">>></span>
+                                <input type="text" id="message-input" class="chat-input" 
+                                    placeholder="Enter command..." autocomplete="off">
                             </div>
                         </div>
 
                         <div class="right-panel">
-                            <div class="data-terminal">
-                                <div class="terminal-header">
-                                    <span class="terminal-title">RECOVERED DATA FRAGMENTS</span>
-                                    <div class="terminal-controls">
-                                        <span class="control-dot"></span>
-                                        <span class="control-dot"></span>
-                                        <span class="control-dot"></span>
-                                    </div>
-                                </div>
-                                <div class="data-content" id="data-fragments">
-                                    <div class="data-status">
-                                        <span class="status-icon">⚠</span>
-                                        No temporal data fragments recovered yet.
-                                        <div class="scan-line"></div>
-                                    </div>
+                            <div class="data-display">
+                                <div class="panel-header">RECOVERED DATA</div>
+                                <div class="data-list" id="data-fragments">
+                                    ${this.renderDataFragments()}
                                 </div>
                             </div>
                         </div>
@@ -203,28 +206,10 @@ ANOMALIES : ${this.gameState?.discoveredAnomalies?.size || 0}/${this.levelRequir
 
     handleMessage(message) {
         const messages = document.getElementById('chat-messages');
-        if (!messages) return;
-
-        // Add user message with timestamp
         messages.innerHTML += `
-            <div class="message user">
-                <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
-                ${this.escapeHtml(message)}
-            </div>
+            <div class="message user">${this.escapeHtml(message)}</div>
+            <div class="message ai">Processing your request...</div>
         `;
-
-        // Generate AI response
-        const response = this.generateAIResponse(message);
-        
-        // Add AI response with timestamp
-        messages.innerHTML += `
-            <div class="message ai">
-                <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
-                ${response}
-            </div>
-        `;
-
-        // Scroll to bottom
         messages.scrollTop = messages.scrollHeight;
     }
 
@@ -368,159 +353,78 @@ ANOMALIES : ${this.gameState?.discoveredAnomalies?.size || 0}/${this.levelRequir
             .message.system {
                 color: var(--color-primary);
             }
-
-            .terminal-window, .data-terminal {
-                background: rgba(0, 0, 0, 0.85);
-                border: 1px solid var(--color-primary);
-                border-radius: 5px;
-                overflow: hidden;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .terminal-header {
-                background: rgba(255, 0, 0, 0.15);
-                padding: 8px 15px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid var(--color-primary);
-            }
-
-            .terminal-title {
-                color: var(--color-primary);
-                font-family: 'Courier New', monospace;
-                font-size: 0.9em;
-            }
-
-            .terminal-controls {
-                display: flex;
-                gap: 5px;
-            }
-
-            .control-dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background: var(--color-primary);
-                opacity: 0.7;
-            }
-
-            .chat-messages {
-                flex-grow: 1;
-                padding: 15px;
-                overflow-y: auto;
-                font-family: 'Courier New', monospace;
-                line-height: 1.4;
-                background: transparent;
-            }
-
-            .message {
-                margin-bottom: 15px;
-                padding: 5px 10px;
-                border-left: 2px solid transparent;
-                animation: fadeIn 0.3s ease;
-            }
-
-            .message.system {
-                color: var(--color-primary);
-                white-space: pre;
-                border-left-color: var(--color-primary);
-            }
-
-            .message.ai {
-                color: var(--color-secondary);
-                border-left-color: var(--color-secondary);
-            }
-
-            .message.user {
-                color: var(--color-text);
-                border-left-color: var(--color-text);
-            }
-
-            .timestamp {
-                color: rgba(255, 255, 255, 0.5);
-                font-size: 0.8em;
-                margin-right: 10px;
-            }
-
-            .chat-input-container {
-                padding: 15px;
-                background: rgba(0, 0, 0, 0.3);
-                border-top: 1px solid var(--color-primary);
-                display: flex;
-                align-items: center;
-            }
-
-            .prompt {
-                color: var(--color-primary);
-                margin-right: 10px;
-                font-family: 'Courier New', monospace;
-                font-weight: bold;
-            }
-
-            .chat-input {
-                background: transparent;
-                border: none;
-                color: var(--color-text);
-                font-family: 'Courier New', monospace;
-                width: 100%;
-                font-size: 1em;
-            }
-
-            .chat-input:focus {
-                outline: none;
-            }
-
-            .data-content {
-                padding: 15px;
-                height: 100%;
-                overflow-y: auto;
-            }
-
-            .data-status {
-                text-align: center;
-                color: var(--color-text);
-                opacity: 0.7;
-                padding: 20px;
-                position: relative;
-            }
-
-            .status-icon {
-                display: block;
-                font-size: 2em;
-                margin-bottom: 10px;
-                color: var(--color-primary);
-            }
-
-            .scan-line {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 2px;
-                background: var(--color-primary);
-                opacity: 0.5;
-                animation: scan 2s linear infinite;
-            }
-
-            @keyframes scan {
-                0% { transform: translateY(0); }
-                100% { transform: translateY(100%); }
-            }
-
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(5px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            @keyframes blink {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.3; }
-            }
         `;
         document.head.appendChild(styles);
+    }
+
+    handleScanCommand() {
+        const currentLevelData = this.temporalCodes[this.currentLevel];
+        const currentAnomalies = this.anomalies[this.currentLevel];
+        
+        // Check if all codes for this level have been discovered
+        const unsolvedCodes = currentLevelData.sequence.filter(
+            code => !this.gameState.decryptedCodes.has(code)
+        );
+
+        // Check if all anomalies for this level have been resolved
+        const unsolvedAnomalies = currentAnomalies.filter(
+            anomaly => !this.gameState.discoveredAnomalies.has(anomaly.id)
+        );
+
+        if (unsolvedCodes.length > 0) {
+            const nextCode = unsolvedCodes[0];
+            return `SCAN COMPLETE: Detected encrypted temporal signature: ${nextCode}\nUse DECRYPT command to process this code.`;
+        }
+
+        if (unsolvedAnomalies.length > 0) {
+            const nextAnomaly = unsolvedAnomalies[0];
+            this.gameState.currentPuzzle = nextAnomaly.id;
+            return `ALERT: ${nextAnomaly.hint}\nUse ANALYZE command to examine the anomaly.`;
+        }
+
+        return "SCAN COMPLETE: No new temporal signatures detected in this sector.";
+    }
+
+    handleDecryptCommand(code) {
+        if (!code) {
+            return "ERROR: Please provide a code to decrypt.";
+        }
+
+        const currentLevelCodes = this.temporalCodes[this.currentLevel].sequence;
+        
+        if (currentLevelCodes.includes(code) && !this.gameState.decryptedCodes.has(code)) {
+            this.gameState.decryptedCodes.add(code);
+            const fragmentId = `TEMPORAL_FRAGMENT_${code.substring(0, 8)}`;
+            this.gameState.temporalFragments.set(fragmentId, {
+                id: fragmentId,
+                content: `Decrypted temporal data from code ${code}`,
+                timestamp: new Date().toISOString()
+            });
+
+            return `DECRYPTION SUCCESSFUL: New temporal fragment recovered.\nProgress: ${this.gameState.decryptedCodes.size}/${currentLevelCodes.length} codes decrypted.`;
+        }
+
+        return "DECRYPTION FAILED: Invalid or already processed code.";
+    }
+
+    getHint() {
+        if (this.gameState.hints <= 0) {
+            return "ERROR: No hints remaining. Continue scanning for temporal signatures.";
+        }
+
+        const currentLevelData = this.temporalCodes[this.currentLevel];
+        const unsolvedCodes = currentLevelData.sequence.filter(
+            code => !this.gameState.decryptedCodes.has(code)
+        );
+
+        this.gameState.hints--;
+        
+        if (unsolvedCodes.length > 0) {
+            const hintIndex = currentLevelData.sequence.length - unsolvedCodes.length;
+            return `HINT (${this.gameState.hints} remaining):\n${currentLevelData.hints[hintIndex] || 'Use SCAN to detect temporal signatures.'}`;
+        }
+
+        return `HINT (${this.gameState.hints} remaining):\nAll codes for this level have been decrypted. Check for remaining anomalies.`;
     }
 }
 
